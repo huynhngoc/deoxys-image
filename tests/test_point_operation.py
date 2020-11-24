@@ -192,7 +192,7 @@ def test_contrast_random_per_channel():
 def test_gaussian_noise():
     images = np.random.normal(0, 1, size=(30, 5, 5, 3))
 
-    res = apply_random_gaussian_noise(images, 0.5)
+    res = apply_random_gaussian_noise(images, (0.1, 0.3))
     assert not np.allclose(res, images)
 
     res = apply_random_gaussian_noise(images, 0.5, channel=0)
