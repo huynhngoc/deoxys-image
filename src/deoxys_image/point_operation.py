@@ -143,7 +143,8 @@ def gaussian_noise(image, noise_var=0.1, channel=None):
         return image
 
 
-def apply_gaussian_noise(images, noise_var=0.1, channel=None):  # pragma: no cover
+def apply_gaussian_noise(images, noise_var=0.1,
+                         channel=None):  # pragma: no cover
     """
     Apply gaussian noise of variance `noise_var`
 

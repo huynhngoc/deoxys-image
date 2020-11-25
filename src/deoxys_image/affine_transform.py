@@ -155,7 +155,6 @@ def apply_affine_transform(image, mode='nearest', cval=0, **kwargs):
 
     if kwargs.get('shift'):
         offset[:-1] = offset[:-1] + np.array(kwargs['shift'])
-        print(offset)
 
     return ndimage.affine_transform(
         image, transform_matrix, offset, mode=mode, cval=cval)
