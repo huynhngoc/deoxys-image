@@ -273,9 +273,9 @@ def blur_transform():
 
 
 if __name__ == '__main__':
-    # affine_transform()
-    # noise_transform()
-    # random_noise_transform()
-    # brightness_transform()
+    affine_transform()
+    noise_transform()
+    random_noise_transform()
+    brightness_transform()
     contranst_transform()
     blur_transform()

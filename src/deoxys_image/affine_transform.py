@@ -4,8 +4,9 @@ import numpy as np
 
 
 def get_rotation_matrix(rotation_axis, theta, rank=3):
-    """
+    r"""
     .. math::
+
         \begin{pmatrix}
             \cos(\frac{x'}{x})&\cos(\frac{y'}{x})&\cos(\frac{z'}{x})\\
             \cos(\frac{x'}{y})&\cos(\frac{y'}{y})&\cos(\frac{z'}{y})\\

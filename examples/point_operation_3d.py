@@ -16,8 +16,8 @@ def load_images(index=0):
 if __name__ == "__main__":
     brightness = 1
     contrast = 1
-    noise = 0
-    sigma = 2
+    noise = 0.1
+    sigma = 0
 
     image, target = load_images()
     shape = image.shape[:-1]

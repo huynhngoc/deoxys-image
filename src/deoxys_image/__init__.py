@@ -8,3 +8,4 @@ __version__ = "0.0.1"
 from .affine_transform import *
 from .point_operation import *
 from .filters import *
+from .patch_sliding import *

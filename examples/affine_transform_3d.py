@@ -6,8 +6,8 @@ from deoxys_image import apply_affine_transform, normalize
 def load_images(index=0):
     with h5py.File(
             '../../hn_perf/3d_unet_32/prediction/prediction.030.h5', 'r') as f:
-        image = f['x'][index]
-        target = f['y'][index]
+        image = f['x'][index][:128, 32:160, -128:]
+        target = f['y'][index][:128, 32:160, -128:]
 
     return normalize(image), target
 
@@ -15,7 +15,7 @@ def load_images(index=0):
 if __name__ == "__main__":
     theta = 30
     zoom = 1
-    rotation_axis = 2
+    rotation_axis = 0
     shift = (0, 0, 0)
 
     image, target = load_images()
