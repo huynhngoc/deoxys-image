@@ -66,6 +66,27 @@ def get_rotation_matrix(rotation_axis, theta, rank=3):
 
 
 def get_shift_matrix(shift, rank=3):
+    r"""
+    Return the shift matrix in affine transform
+    .. math::
+        \begin{pmatrix}1&0&offset_x\\
+                0&1&offset_y\\
+                0&0&1
+        \end{pmatrix}
+
+
+    Parameters
+    ----------
+    shift : int,
+        number of pixel to shift
+    rank : int, optional
+        the rank of the matrix, by default 3
+
+    Returns
+    -------
+    np.array
+        the shift matrix
+    """
     shift_matrix = np.identity(rank)
 
     shift_matrix[:-1, -1] = shift
@@ -159,3 +180,19 @@ def apply_affine_transform(image, mode='nearest', cval=0, **kwargs):
 
     return ndimage.affine_transform(
         image, transform_matrix, offset, mode=mode, cval=cval)
+
+
+def apply_flip(image, axis):
+    image = np.array(image)
+    if '__iter__' not in dir(axis):
+        axis = [axis]
+    if 0 in axis:
+        image = image[::-1]
+
+    if 1 in axis:
+        image = image[:, ::-1]
+
+    if 2 in axis:
+        image = image[:, :, ::-1]
+
+    return image

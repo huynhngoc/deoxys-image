@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from deoxys_image import affine_transform_matrix, apply_affine_transform, \
-    get_rotation_matrix, get_zoom_matrix, get_shift_matrix
+    get_rotation_matrix, get_zoom_matrix, get_shift_matrix, apply_flip
 
 
 def test_get_rotation_matrix_error():
@@ -276,3 +276,147 @@ def test_apply_affine_transform_3d():
                            [0, 0, 0]]
 
     assert np.allclose(res, expected)
+
+
+def test_flip_2d():
+    image = np.zeros((3, 3, 2))
+    image[..., 0] = [[1, 1, 0],
+                     [1, 1, 0],
+                     [0, 0, 0]]
+
+    image[..., 1] = [[1, 1, 1],
+                     [1, 1, 0],
+                     [1, 0, 0]]
+
+    res = apply_flip(image, 0)
+
+    expected = np.zeros((3, 3, 2))
+    expected[..., 0] = [[0, 0, 0],
+                        [1, 1, 0],
+                        [1, 1, 0]]
+
+    expected[..., 1] = [[1, 0, 0],
+                        [1, 1, 0],
+                        [1, 1, 1]]
+
+    assert np.all(res == expected)
+
+    res = apply_flip(image, 1)
+
+    expected = np.zeros((3, 3, 2))
+    expected[..., 0] = [[0, 1, 1],
+                        [0, 1, 1],
+                        [0, 0, 0]]
+
+    expected[..., 1] = [[1, 1, 1],
+                        [0, 1, 1],
+                        [0, 0, 1]]
+
+    assert np.all(res == expected)
+
+    res = apply_flip(image, axis=(0, 1))
+
+    expected = np.zeros((3, 3, 2))
+    expected[..., 0] = [[0, 0, 0],
+                        [0, 1, 1],
+                        [0, 1, 1]]
+
+    expected[..., 1] = [[0, 0, 1],
+                        [0, 1, 1],
+                        [1, 1, 1]]
+
+    assert np.all(res == expected)
+
+
+def test_flip_3d():
+    image = np.zeros((3, 3, 3, 1))
+
+    image[0][..., 0] = [[1, 0, 0],
+                        [1, 0, 0],
+                        [1, 0, 0]]
+    image[1][..., 0] = [[1, 0, 0],
+                        [1, 0, 0],
+                        [0, 0, 0]]
+    image[2][..., 0] = [[1, 0, 0],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+
+    res = apply_flip(image, axis=0)
+
+    expected = np.zeros((3, 3, 3, 1))
+
+    expected[2][..., 0] = [[1, 0, 0],
+                           [1, 0, 0],
+                           [1, 0, 0]]
+    expected[1][..., 0] = [[1, 0, 0],
+                           [1, 0, 0],
+                           [0, 0, 0]]
+    expected[0][..., 0] = [[1, 0, 0],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+
+    assert np.all(res == expected)
+
+    res = apply_flip(image, axis=1)
+
+    expected = np.zeros((3, 3, 3, 1))
+
+    expected[0][..., 0] = [[1, 0, 0],
+                           [1, 0, 0],
+                           [1, 0, 0]]
+    expected[1][..., 0] = [[0, 0, 0],
+                           [1, 0, 0],
+                           [1, 0, 0]]
+    expected[2][..., 0] = [[0, 0, 0],
+                           [0, 0, 0],
+                           [1, 0, 0]]
+
+    assert np.all(res == expected)
+
+    res = apply_flip(image, axis=(0, 1))
+
+    expected = np.zeros((3, 3, 3, 1))
+
+    expected[2][..., 0] = [[1, 0, 0],
+                           [1, 0, 0],
+                           [1, 0, 0]]
+    expected[1][..., 0] = [[0, 0, 0],
+                           [1, 0, 0],
+                           [1, 0, 0]]
+    expected[0][..., 0] = [[0, 0, 0],
+                           [0, 0, 0],
+                           [1, 0, 0]]
+
+    assert np.all(res == expected)
+
+    res = apply_flip(image, axis=(0, 1, 2))
+
+    expected = np.zeros((3, 3, 3, 1))
+
+    expected[2][..., 0] = [[0, 0, 1],
+                           [0, 0, 1],
+                           [0, 0, 1]]
+    expected[1][..., 0] = [[0, 0, 0],
+                           [0, 0, 1],
+                           [0, 0, 1]]
+    expected[0][..., 0] = [[0, 0, 0],
+                           [0, 0, 0],
+                           [0, 0, 1]]
+
+    assert np.all(res == expected)
+
+    res = apply_flip(image, axis=2)
+
+    expected = np.zeros((3, 3, 3, 1))
+
+    expected[0][..., 0] = [[0, 0, 1],
+                           [0, 0, 1],
+                           [0, 0, 1]]
+    expected[1][..., 0] = [[0, 0, 1],
+                           [0, 0, 1],
+                           [0, 0, 0]]
+    expected[2][..., 0] = [[0, 0, 1],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+
+    assert np.all(res == expected)
