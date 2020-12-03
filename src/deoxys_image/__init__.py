@@ -9,3 +9,4 @@ from .affine_transform import *
 from .point_operation import *
 from .filters import *
 from .patch_sliding import *
+from .augmentation import *

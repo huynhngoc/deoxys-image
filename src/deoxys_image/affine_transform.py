@@ -68,6 +68,7 @@ def get_rotation_matrix(rotation_axis, theta, rank=3):
 def get_shift_matrix(shift, rank=3):
     r"""
     Return the shift matrix in affine transform
+
     .. math::
         \begin{pmatrix}1&0&offset_x\\
                 0&1&offset_y\\
@@ -158,7 +159,7 @@ def affine_transform_matrix(rotation_axis=2, theta=0, rank=3,
     return transform_matrix
 
 
-def apply_affine_transform(image, mode='nearest', cval=0, **kwargs):
+def apply_affine_transform(image, mode='constant', cval=0, **kwargs):
     if not 3 <= image.ndim <= 4:
         raise ValueError(
             f'Not support affine transform for tensor of rank {image.ndim}')
@@ -175,7 +176,7 @@ def apply_affine_transform(image, mode='nearest', cval=0, **kwargs):
         transform_matrix = np.identity(image.ndim)
         offset = np.zeros(image.ndim)
 
-    if kwargs.get('shift'):
+    if kwargs.get('shift') is not None:
         offset[:-1] = offset[:-1] + np.array(kwargs['shift'])
 
     return ndimage.affine_transform(
