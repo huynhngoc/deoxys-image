@@ -7,7 +7,8 @@ from .affine_transform import apply_affine_transform, apply_flip
 
 class ImageAugmentation():
     r"""
-        Apply transformation in 2d and 3d image for augmentation
+        Apply transformation in 2d and 3d image (and mask label)
+        for augmentation
 
         Parameters
         ----------
@@ -213,12 +214,19 @@ class ImageAugmentation():
                     shift_chance=self.shift_chance)
                 # Only apply affine transform when needed
                 if theta != 0 or zoom_factor != 1 or not np.all(shift == 0):
+                    # After affine transform, the pixel intensity may change
+                    # the image should clip back to original range
+                    reduced_ax = tuple(
+                        range(len(transformed_images[i].shape) - 1))
+                    vmin = transformed_images[i].min(axis=reduced_ax)
+                    vmax = transformed_images[i].max(axis=reduced_ax)
+
                     transformed_images[i] = apply_affine_transform(
                         transformed_images[i],
                         mode=self.fill_mode, cval=self.cval,
                         theta=theta, rotation_axis=self.rotation_axis,
                         zoom_factor=zoom_factor,
-                        shift=shift)
+                        shift=shift).clip(vmin, vmax)
 
                     if targets is not None:
                         transformed_targets[i] = apply_affine_transform(
@@ -227,6 +235,9 @@ class ImageAugmentation():
                             theta=theta, rotation_axis=self.rotation_axis,
                             zoom_factor=zoom_factor,
                             shift=shift)
+                        # round the target label back to integer
+                        transformed_targets[i] = np.rint(
+                            transformed_targets[i])
 
             # flip image
             if self.flip_axis is not None:

@@ -138,6 +138,7 @@ def test_apply_affine_transform():
                         [0, 0, 0, 0, 0]]
 
     assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
 
 
 def test_apply_affine_transform_3d():
@@ -188,6 +189,7 @@ def test_apply_affine_transform_3d():
                            [0, 0, 1]]
 
     assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
 
     image = np.zeros((3, 3, 3, 2))
     # 3d T in the first channel
@@ -233,6 +235,7 @@ def test_apply_affine_transform_3d():
                            [0, 0, 0]]
 
     assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
 
     res = apply_affine_transform(
         image, shift=(0, 1, 0), mode='constant', cval=0)
@@ -249,6 +252,7 @@ def test_apply_affine_transform_3d():
                            [0, 0, 0]]
 
     assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
 
     res = apply_affine_transform(
         image, shift=(0, 0, 1), mode='constant', cval=0)
@@ -276,6 +280,7 @@ def test_apply_affine_transform_3d():
                            [0, 0, 0]]
 
     assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
 
 
 def test_flip_2d():
