@@ -38,7 +38,7 @@ class ImageAugmentation():
         flip_axis : int, tuple, list, optional
             flip by one or more axis (in the single image),
             by default None (no flipping)
-        brightness_range : int, tuple, list, optional
+        brightness_range : float, tuple, list, optional
             range of the brightness portion,
             based on the max intensity value of each channel.
             For example, when the max intensity value of one channel is 1.0,
@@ -54,9 +54,9 @@ class ImageAugmentation():
         brightness_chance : float, optional
             probability to apply brightness change transform to an image,
             by default 0.1
-        contrast_range : int, tuple, list, optional
+        contrast_range : float, tuple, list, optional
             range of the contrast portion,
-            (the history range is scaled up or down).
+            (the histogram range is scaled up or down).
             By default 1 (no changes in contrast)
         contrast_channel : int, tuple, list, optional
             the channel(s) to apply changes in contrast,
