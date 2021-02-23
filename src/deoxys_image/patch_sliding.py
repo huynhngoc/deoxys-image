@@ -79,7 +79,8 @@ def check_drop(images, patch_indice, patch_size,
 
 def get_patches(images, target=None, patch_indice=None, patch_size=None,
                 stratified=True, batch_size=None,
-                drop_fraction=0.1, check_drop_channel=None):
+                drop_fraction=0.1, check_drop_channel=None,
+                bounding_box=False):
     try:
         images = np.array(images)
     except Exception:  # compatity check  # pragma: no cover
@@ -112,8 +113,12 @@ def get_patches(images, target=None, patch_indice=None, patch_size=None,
         list((product(np.arange(len(images)), patch_indice))), dtype=object)
 
     if drop_fraction > 0:
-        check_drop_list = check_drop(images, patch_indice, patch_size,
-                                     drop_fraction, check_drop_channel)
+        if bounding_box and target:
+            check_drop_list = check_drop(target, patch_indice, patch_size,
+                                         drop_fraction, check_drop_channel)
+        else:
+            check_drop_list = check_drop(images, patch_indice, patch_size,
+                                         drop_fraction, check_drop_channel)
 
         patch_indice = patch_indice[check_drop_list]
 
