@@ -113,7 +113,7 @@ def get_patches(images, target=None, patch_indice=None, patch_size=None,
         list((product(np.arange(len(images)), patch_indice))), dtype=object)
 
     if drop_fraction > 0:
-        if bounding_box and target:
+        if bounding_box:
             check_drop_list = check_drop(target, patch_indice, patch_size,
                                          drop_fraction, check_drop_channel)
         else:
