@@ -1,4 +1,5 @@
 import numpy as np
+from multiprocessing import Pool
 
 from .point_operation import gaussian_noise, change_brightness, change_contrast
 from .filters import gaussian_blur
@@ -108,10 +109,12 @@ class ImageAugmentation():
                  noise_variance=0, noise_channel=None,
                  noise_chance=0.1,
                  blur_range=0, blur_channel=None, blur_chance=0.1,
-                 fill_mode='constant', cval=0):
+                 fill_mode='constant', cval=0, multiprocessing=32):
         """
         Apply transformation in 2d and 3d image for augmentation
         """
+        # multiprocessing
+        self.multiprocessing = multiprocessing
         # check if perform affine transform
         self.affine_transform = rotation_range > 0 or \
             zoom_range != 1 or shift_range is not None
@@ -180,7 +183,7 @@ class ImageAugmentation():
         else:
             self.blur_range = blur_range
 
-    def transform(self, images, targets=None):
+    def _transform(self, images, targets=None):
         """
         Apply augmentation to a batch of images
 
@@ -196,10 +199,10 @@ class ImageAugmentation():
         np.array
             the transformed images batch (and target)
         """
-        # copy to another version
-        transformed_images = images.copy()
-        if targets is not None:
-            transformed_targets = targets.copy()
+        transformed_images = images
+        transformed_targets = targets
+        # if targets is not None:
+        #     transformed_targets = targets.copy()
 
         # loop through
         for i in range(len(images)):
@@ -289,6 +292,53 @@ class ImageAugmentation():
             return transformed_images
         else:
             return transformed_images, transformed_targets
+
+    def transform(self, images, targets=None):
+        """
+        Apply augmentation to a batch of images
+
+        Parameters
+        ----------
+        images : np.array
+            the image batch
+        targets : np.array, optional
+            the target batch, by default None
+
+        Returns
+        -------
+        np.array
+            the transformed images batch (and target)
+        """
+        # copy to another version
+        images = images.copy()
+
+        if targets is not None:
+            targets = targets.copy()
+        if self.multiprocessing <= 1:
+            return self._transform(images, targets)
+        else:
+            worker_num = self.multiprocessing
+            total_images = len(images)
+            if worker_num > total_images:
+                size = 1
+                worker_num = total_images
+            else:
+                size = min(4, total_images // worker_num)
+
+            if targets is None:
+                with Pool(processes=worker_num) as pool:
+                    res = pool.map(self._transform,
+                                   [images[i: i+size]
+                                    for i in range(0, total_images, size)])
+                return np.vstack(res)
+            else:
+                with Pool(processes=worker_num) as pool:
+                    res = pool.starmap(self._transform,
+                                       [(images[i: i+size], targets[i:i+size])
+                                        for i in range(0, total_images, size)])
+
+                return np.vstack(
+                    [r[0] for r in res]), np.vstack([r[1] for r in res])
 
 
 def get_range_value(value, default_val=1):
