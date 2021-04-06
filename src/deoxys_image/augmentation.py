@@ -109,7 +109,7 @@ class ImageAugmentation():
                  noise_variance=0, noise_channel=None,
                  noise_chance=0.1,
                  blur_range=0, blur_channel=None, blur_chance=0.1,
-                 fill_mode='constant', cval=0, multiprocessing=32):
+                 fill_mode='constant', cval=0, multiprocessing=1):
         """
         Apply transformation in 2d and 3d image for augmentation
         """
