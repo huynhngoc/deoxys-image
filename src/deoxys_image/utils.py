@@ -14,6 +14,7 @@ def get_num_cpus():
                 if not ray.is_initialized():
                     ray.init(include_dashboard=False,
                              _temp_dir=os.environ.get('RAY_ROOT'))
+                    print(f'Initialized ray on {NUM_CPUS} cpus')
         except Exception as e:
             NUM_CPUS = 1
             print(e, 'Running augmentation on single processors')
