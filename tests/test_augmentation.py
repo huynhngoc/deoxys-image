@@ -100,3 +100,77 @@ def test_augmentation_single():
 
     with pytest.raises(ValueError):
         aug = ImageAugmentation(rank=3, shift_range=(0, -20))
+
+
+def test_augmentation_single_no_parallel():
+    images = np.random.random((10, 3, 3, 2))
+    targets = np.random.random((10, 3, 3, 1))
+
+    aug = ImageAugmentation(rank=3, rotation_range=20,
+                            rotation_axis=2, multiprocessing=1)
+    aug.transform(images)
+    aug.transform(images, targets)
+
+    aug = ImageAugmentation(rank=3, zoom_range=1.5, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=3, zoom_range=0.5, multiprocessing=1)
+    aug.transform(images, targets)
+
+    aug = ImageAugmentation(rank=3, zoom_range=(0.8, 1.2), multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=3, shift_range=(0, 20), multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=3, shift_range=30, multiprocessing=1)
+    aug.transform(images, targets)
+
+    aug = ImageAugmentation(rank=3, flip_axis=0, multiprocessing=1)
+    aug.transform(images, targets)
+
+    aug = ImageAugmentation(rank=3, flip_axis=[0, 1], multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=3, brightness_range=0.8, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=3, brightness_range=1.2, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(
+        rank=3, brightness_range=(0.8, 1.2), multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, contrast_range=0.8, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, contrast_range=1.2, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(
+        rank=4, contrast_range=(0.8, 1.2), multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, noise_variance=0.8, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, noise_variance=1.2, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(
+        rank=4, noise_variance=(0.8, 1.2), multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, blur_range=0.8, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, blur_range=1.2, multiprocessing=1)
+    aug.transform(images)
+
+    aug = ImageAugmentation(rank=4, blur_range=(0.8, 1.2), multiprocessing=1)
+    aug.transform(images)
+
+    with pytest.raises(ValueError):
+        aug = ImageAugmentation(
+            rank=3, shift_range=(0, -20), multiprocessing=1)

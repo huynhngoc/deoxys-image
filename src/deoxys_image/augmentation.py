@@ -1,9 +1,21 @@
 import numpy as np
-from multiprocessing import Pool
+import gc
 
 from .point_operation import gaussian_noise, change_brightness, change_contrast
 from .filters import gaussian_blur
 from .affine_transform import apply_affine_transform, apply_flip
+from .utils import get_num_cpus
+
+if get_num_cpus() > 1:
+    import ray
+
+    @ray.remote(num_cpus=get_num_cpus(), num_gpus=0, num_returns=2)
+    def tranform_images_targets(func, *args):
+        return func(*args)
+
+    @ray.remote(num_cpus=get_num_cpus(), num_gpus=0)
+    def tranform_images(func, *args):
+        return func(*args)
 
 
 class ImageAugmentation():
@@ -109,7 +121,7 @@ class ImageAugmentation():
                  noise_variance=0, noise_channel=None,
                  noise_chance=0.1,
                  blur_range=0, blur_channel=None, blur_chance=0.1,
-                 fill_mode='constant', cval=0, multiprocessing=1):
+                 fill_mode='constant', cval=0, multiprocessing=get_num_cpus()):
         """
         Apply transformation in 2d and 3d image for augmentation
         """
@@ -199,10 +211,10 @@ class ImageAugmentation():
         np.array
             the transformed images batch (and target)
         """
-        transformed_images = images
-        transformed_targets = targets
-        # if targets is not None:
-        #     transformed_targets = targets.copy()
+        transformed_images = images.copy()
+        # transformed_targets = targets
+        if targets is not None:
+            transformed_targets = targets.copy()
 
         # loop through
         for i in range(len(images)):
@@ -309,36 +321,43 @@ class ImageAugmentation():
         np.array
             the transformed images batch (and target)
         """
-        # copy to another version
-        images = images.copy()
+        gc.collect()
+        # images = images.copy()
 
-        if targets is not None:
-            targets = targets.copy()
+        # if targets is not None:
+        #     targets = targets.copy()
         if self.multiprocessing <= 1:
             return self._transform(images, targets)
         else:
-            worker_num = self.multiprocessing
-            total_images = len(images)
-            if worker_num > total_images:
-                size = 1
-                worker_num = total_images
-            else:
-                size = min(4, total_images // worker_num)
+            # split array into smaller chunks based on number of cores
+            total = len(images)
+            chunk_size = max(total//16, 1)
+            # empty list of ray_ref objects
+            images_new = []
+            if targets is not None:
+                target_new = []
+                # transform each chunk of images
+                for i in range(0, total, chunk_size):
+                    x_, y_ = tranform_images_targets.remote(
+                        self._transform,
+                        images[i:i+chunk_size], targets[i:i+chunk_size])
+                    images_new.append(x_)
+                    target_new.append(y_)
 
-            if targets is None:
-                with Pool(processes=worker_num) as pool:
-                    res = pool.map(self._transform,
-                                   [images[i: i+size]
-                                    for i in range(0, total_images, size)])
-                return np.vstack(res)
-            else:
-                with Pool(processes=worker_num) as pool:
-                    res = pool.starmap(self._transform,
-                                       [(images[i: i+size], targets[i:i+size])
-                                        for i in range(0, total_images, size)])
+                # deserialization
+                images[:] = np.concatenate(ray.get(images_new))
+                targets[:] = np.concatenate(ray.get(target_new))
 
-                return np.vstack(
-                    [r[0] for r in res]), np.vstack([r[1] for r in res])
+                return images, targets
+            else:
+                for i in range(0, total, chunk_size):
+                    x_ = tranform_images.remote(
+                        self._transform, images[i:i+chunk_size])
+                    images_new.append(x_)
+
+                images[:] = np.concatenate(ray.get(images_new))
+
+                return images
 
 
 def get_range_value(value, default_val=1):

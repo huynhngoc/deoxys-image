@@ -5,8 +5,9 @@ __email__ = "ngoc.huynh.bao@nmbu.no"
 __version__ = "0.0.2"
 
 
-from .affine_transform import *
-from .point_operation import *
-from .filters import *
-from .patch_sliding import *
+from .utils import *
 from .augmentation import *
+from .patch_sliding import *
+from .filters import *
+from .point_operation import *
+from .affine_transform import *

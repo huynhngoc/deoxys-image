@@ -99,21 +99,21 @@ def test_check_drop_3d():
     indice = get_patch_indice((10, 10, 10), (5, 5, 5), 0)
     indice = list(product([0, 1], indice))
 
-    res = check_drop(images, indice, (5, 5, 5), 0.4, None)
+    res = check_drop(images, indice, (5, 5, 5), 0.4, None)[0]
     expected = [
         False, False, False, False, True, True, True, True
     ] * 2
 
     assert np.all(res == expected)
 
-    res = check_drop(images, indice, (5, 5, 5), 0.9, None)
+    res = check_drop(images, indice, (5, 5, 5), 0.9, None)[0]
     expected = [
         False, False, False, False, True, True, False, False
     ] * 2
 
     assert np.all(res == expected)
 
-    res = check_drop(images, indice, (5, 5, 5), 0.9, 0)
+    res = check_drop(images, indice, (5, 5, 5), 0.9, 0)[0]
     expected = [
         False, False, False, False, True, True, True, True
     ] * 2
@@ -167,7 +167,7 @@ def test_check_drop_2d():
     indice = get_patch_indice((10, 10), (5, 5), 0)
     indice = list(product([0, 1], indice))
 
-    res = check_drop(images, indice, (5, 5), 0.4, None)
+    res = check_drop(images, indice, (5, 5), 0.4, None)[0]
 
     expected = [
         False, False, True, True
@@ -175,14 +175,14 @@ def test_check_drop_2d():
 
     assert np.all(res == expected)
 
-    res = check_drop(images, indice, (5, 5), 0.9, None)
+    res = check_drop(images, indice, (5, 5), 0.9, None)[0]
     expected = [
         False, False, True, False
     ] * 2
 
     assert np.all(res == expected)
 
-    res = check_drop(images, indice, (5, 5), 0.9, 0)
+    res = check_drop(images, indice, (5, 5), 0.9, 0)[0]
     expected = [
         False, False, True, True
     ] * 2
@@ -192,7 +192,7 @@ def test_check_drop_2d():
 
 def test_stratified_index():
     values = np.array([0, 0, 0, 0, 0, 1, 1, 1])
-    index = get_stratified_index(values, 4)
+    index = get_stratified_index(values, 4, steps=1)
 
     assert len(index) == len(values)
     assert np.all(np.unique(index) == np.arange(len(values)))
@@ -200,7 +200,7 @@ def test_stratified_index():
     assert sum(values[index[:4]]) == 2
     assert sum(values[index[4:]]) == 1
 
-    index = get_stratified_index(values, 3)
+    index = get_stratified_index(values, 3, steps=1)
 
     assert len(index) == len(values)
     assert np.all(np.unique(index) == np.arange(len(values)))
@@ -209,7 +209,7 @@ def test_stratified_index():
     assert sum(values[index[3:6]]) == 1
     assert sum(values[index[6:]]) == 1
 
-    index = get_stratified_index(values, 2)
+    index = get_stratified_index(values, 2, steps=1)
 
     assert len(index) == len(values)
     assert np.all(np.unique(index) == np.arange(len(values)))
