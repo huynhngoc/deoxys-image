@@ -127,6 +127,7 @@ class ImageAugmentation():
         """
         # multiprocessing
         self.multiprocessing = multiprocessing
+        print('Number of cpus for augmentation:', multiprocessing)
         # check if perform affine transform
         self.affine_transform = rotation_range > 0 or \
             zoom_range != 1 or shift_range is not None
@@ -348,6 +349,16 @@ class ImageAugmentation():
                 images[:] = np.concatenate(ray.get(images_new))
                 targets[:] = np.concatenate(ray.get(target_new))
 
+                # # alternative implementation
+                # for i in range(total):
+                #     x_, y_ = tranform_images_targets.remote(
+                #         self._transform,
+                #         images[i:i+1], targets[i:i+1])
+                #     images_new.append(x_)
+                #     target_new.append(y_)
+                # images[:] = ray.get(images_new)
+                # targets[:] = ray.get(target_new)
+
                 return images, targets
             else:
                 for i in range(0, total, chunk_size):
@@ -356,6 +367,13 @@ class ImageAugmentation():
                     images_new.append(x_)
 
                 images[:] = np.concatenate(ray.get(images_new))
+
+                # for i in range(total):
+                #     x_ = tranform_images.remote(
+                #         self._transform, images[i:i+1])
+                #     images_new.append(x_)
+
+                # images[:] = ray.get(images_new)
 
                 return images
 
