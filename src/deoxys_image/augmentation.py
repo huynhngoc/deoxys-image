@@ -1,10 +1,12 @@
 import numpy as np
 import gc
+import os
 
 from .point_operation import gaussian_noise, change_brightness, change_contrast
 from .filters import gaussian_blur
 from .affine_transform import apply_affine_transform, apply_flip
 from .utils import get_num_cpus
+from time import time
 
 if get_num_cpus() > 1:
     import ray
@@ -219,6 +221,7 @@ class ImageAugmentation():
 
         # loop through
         for i in range(len(images)):
+            now = time()
             # apply affine transform if possible
             if self.affine_transform:
                 theta, zoom_factor, shift = get_random_affine_params(
@@ -300,7 +303,8 @@ class ImageAugmentation():
                     transformed_images[i],
                     np.random.uniform(*self.blur_range),
                     channel=self.blur_channel)
-
+            if (os.environ.get('debug')):
+                print('item', time() - now)
         if targets is None:
             return transformed_images
         else:
