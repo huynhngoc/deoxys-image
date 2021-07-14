@@ -283,6 +283,184 @@ def test_apply_affine_transform_3d():
     assert np.all(np.rint(res) == expected)
 
 
+def test_apply_affine_transform_3d_nosplit():
+    image = np.zeros((3, 3, 3, 2))
+    # 3d T in the first channel
+    image[0][..., 0] = [[0, 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 0]]
+    image[1][..., 0] = [[0, 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 0]]
+    image[2][..., 0] = [[0, 0, 0],
+                        [1, 1, 1],
+                        [0, 0, 0]]
+    # 3d H in the second channel
+    image[0][..., 1] = [[1, 0, 1],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+    image[1][..., 1] = [[1, 1, 1],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+    image[2][..., 1] = [[1, 0, 1],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+    res = apply_affine_transform(
+        image, theta=90, rotation_axis=0, mode='constant',
+        cval=0, use_3d_transform=True)
+
+    expected = np.zeros((3, 3, 3, 2))
+    # 3d T in the first channel
+    expected[0][..., 0] = [[0, 0, 0],
+                           [0, 1, 0],
+                           [0, 0, 0]]
+    expected[1][..., 0] = [[0, 0, 0],
+                           [0, 1, 0],
+                           [0, 0, 0]]
+    expected[2][..., 0] = [[0, 1, 0],
+                           [0, 1, 0],
+                           [0, 1, 0]]
+    # 3d H in the second channel
+    expected[0][..., 1] = [[0, 0, 1],
+                           [0, 0, 0],
+                           [0, 0, 1]]
+    expected[1][..., 1] = [[0, 0, 1],
+                           [0, 0, 1],
+                           [0, 0, 1]]
+    expected[2][..., 1] = [[0, 0, 1],
+                           [0, 0, 0],
+                           [0, 0, 1]]
+
+    assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
+
+    image = np.zeros((3, 3, 3, 2))
+    # 3d T in the first channel
+    image[0][..., 0] = [[0, 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 0]]
+    image[1][..., 0] = [[0, 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 0]]
+    image[2][..., 0] = [[0, 0, 0],
+                        [1, 1, 1],
+                        [0, 0, 0]]
+    # 3d H in the second channel
+    image[0][..., 1] = [[1, 0, 1],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+    image[1][..., 1] = [[1, 1, 1],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+    image[2][..., 1] = [[1, 0, 1],
+                        [0, 0, 0],
+                        [0, 0, 0]]
+    res = apply_affine_transform(
+        image, shift=(1, 0, 0), mode='constant', cval=0, use_3d_transform=True)
+
+    expected = np.zeros((3, 3, 3, 2))
+    # 3d T in the first channel
+    # expected[0][..., 0] = [[0, 0, 0],
+    #                        [0, 1, 0],
+    #                        [0, 0, 0]]
+    expected[0][..., 0] = [[0, 0, 0],
+                           [0, 1, 0],
+                           [0, 0, 0]]
+    expected[1][..., 0] = [[0, 0, 0],
+                           [1, 1, 1],
+                           [0, 0, 0]]
+    # 3d H in the second channel
+    expected[0][..., 1] = [[1, 1, 1],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+    expected[1][..., 1] = [[1, 0, 1],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+
+    assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
+
+    res = apply_affine_transform(
+        image, shift=(0, 1, 0), mode='constant', cval=0, use_3d_transform=True)
+
+    expected = np.zeros((3, 3, 3, 2))
+    expected[0][..., 0] = [[0, 1, 0],
+                           [0, 0, 0],
+                           [0, 0, 0], ]
+    expected[1][..., 0] = [[0, 1, 0],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+    expected[2][..., 0] = [[1, 1, 1],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+
+    assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
+
+    res = apply_affine_transform(
+        image, shift=(0, 0, 1), mode='constant', cval=0, use_3d_transform=True)
+
+    expected = np.zeros((3, 3, 3, 2))
+    # 3d T in the first channel
+    expected[0][..., 0] = [[0, 0, 0],
+                           [1, 0, 0],
+                           [0, 0, 0]]
+    expected[1][..., 0] = [[0, 0, 0],
+                           [1, 0, 0],
+                           [0, 0, 0]]
+    expected[2][..., 0] = [[0, 0, 0],
+                           [1, 1, 0],
+                           [0, 0, 0]]
+    # 3d H in the second channel
+    expected[0][..., 1] = [[0, 1, 0],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+    expected[1][..., 1] = [[1, 1, 0],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+    expected[2][..., 1] = [[0, 1, 0],
+                           [0, 0, 0],
+                           [0, 0, 0]]
+
+    assert np.allclose(res, expected)
+    assert np.all(np.rint(res) == expected)
+
+
+def test_apply_affine_transform_3d_correct():
+    image = np.random.random((4, 4, 4, 2))
+    res = apply_affine_transform(
+        image, theta=30, rotation_axis=0,
+        shift=[-1, 1, 2], mode='constant',
+        cval=0)
+    expected = apply_affine_transform(
+        image, theta=30, rotation_axis=0,
+        shift=[-1, 1, 2], mode='constant',
+        cval=0, use_3d_transform=True)
+    assert np.allclose(res, expected)
+
+    image = np.random.random((4, 4, 4, 2))
+    res = apply_affine_transform(
+        image, theta=-30, rotation_axis=1,
+        shift=[2, -1, 1], mode='constant',
+        cval=0)
+    expected = apply_affine_transform(
+        image, theta=-30, rotation_axis=1,
+        shift=[2, -1, 1], mode='constant',
+        cval=0, use_3d_transform=True)
+    assert np.allclose(res, expected)
+
+    image = np.random.random((4, 4, 4, 2))
+    res = apply_affine_transform(
+        image, theta=90, rotation_axis=2,
+        shift=[1, 2, -1], mode='constant',
+        cval=0)
+    expected = apply_affine_transform(
+        image, theta=90, rotation_axis=2,
+        shift=[1, 2, -1], mode='constant',
+        cval=0, use_3d_transform=True)
+    assert np.allclose(res, expected)
+
+
 def test_flip_2d():
     image = np.zeros((3, 3, 2))
     image[..., 0] = [[1, 1, 0],

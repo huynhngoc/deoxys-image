@@ -220,7 +220,7 @@ def apply_affine_transform(image, mode='constant', cval=0, **kwargs):
 
         return ndimage.affine_transform(
             image, transform_matrix, offset, mode=mode, cval=cval)
-    else:  # pragma: no cover
+    else:
         # apply transform to 2d images
         image = image.copy()
         theta = kwargs.get('theta', 0)

@@ -333,7 +333,7 @@ class ImageAugmentation():
         #     targets = targets.copy()
         if self.multiprocessing <= 1:
             return self._transform(images, targets)
-        else:  # pragma: no cover
+        else:
             # split array into smaller chunks based on number of cores
             total = len(images)
             chunk_size = max(total//MAX_WORKERS, 1)
