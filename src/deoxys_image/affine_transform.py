@@ -200,8 +200,9 @@ def apply_affine_transform(image, mode='constant', cval=0, **kwargs):
     if not 3 <= image.ndim <= 4:
         raise ValueError(
             f'Not support affine transform for tensor of rank {image.ndim}')
-    # if image.ndim == 3:
-    if kwargs.get('use_3d_transform') or get_num_cpus() == 1:
+
+    use_3d_transform = kwargs.get('use_3d_transform')
+    if get_num_cpus() == 1 or image.ndim == 3 or use_3d_transform:
         transform_matrix = affine_transform_matrix(rank=image.ndim, **kwargs)
 
         if transform_matrix is not None:
@@ -221,6 +222,7 @@ def apply_affine_transform(image, mode='constant', cval=0, **kwargs):
             image, transform_matrix, offset, mode=mode, cval=cval)
     else:  # pragma: no cover
         # apply transform to 2d images
+        image = image.copy()
         theta = kwargs.get('theta', 0)
         rotation_axis = kwargs.get('rotation_axis', 0)
         zoom_factor = kwargs.get('zoom_factor', 1)

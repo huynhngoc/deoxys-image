@@ -8,6 +8,9 @@ from .affine_transform import apply_affine_transform, apply_flip
 from .utils import get_num_cpus
 from time import time
 
+# maximum number of running workers
+MAX_WORKERS = 16
+
 if get_num_cpus() > 1:
     import ray
 
@@ -221,7 +224,6 @@ class ImageAugmentation():
 
         # loop through
         for i in range(len(images)):
-            now = time()
             # apply affine transform if possible
             if self.affine_transform:
                 theta, zoom_factor, shift = get_random_affine_params(
@@ -303,8 +305,6 @@ class ImageAugmentation():
                     transformed_images[i],
                     np.random.uniform(*self.blur_range),
                     channel=self.blur_channel)
-            if (os.environ.get('debug')):
-                print('item', time() - now)
         if targets is None:
             return transformed_images
         else:
@@ -333,10 +333,10 @@ class ImageAugmentation():
         #     targets = targets.copy()
         if self.multiprocessing <= 1:
             return self._transform(images, targets)
-        else:
+        else:  # pragma: no cover
             # split array into smaller chunks based on number of cores
             total = len(images)
-            chunk_size = max(total//16, 1)
+            chunk_size = max(total//MAX_WORKERS, 1)
             # empty list of ray_ref objects
             images_new = []
             if targets is not None:
