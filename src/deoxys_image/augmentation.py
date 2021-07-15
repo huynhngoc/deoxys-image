@@ -327,10 +327,12 @@ class ImageAugmentation():
             the transformed images batch (and target)
         """
         gc.collect()
-        # images = images.copy()
+        # make a copy
+        images = images.copy()
 
-        # if targets is not None:
-        #     targets = targets.copy()
+        if targets is not None:
+            targets = targets.copy()
+
         if self.multiprocessing <= 1:
             return self._transform(images, targets)
         else:
