@@ -14,7 +14,8 @@ MAX_WORKERS = 16
 if get_num_cpus() > 1:
     import ray
 
-    @ray.remote(num_cpus=get_num_cpus(), num_gpus=0, num_returns=2)
+    @ray.remote(num_cpus=get_num_cpus(), num_gpus=0, num_returns=2,
+                max_calls=10000)
     def tranform_images_targets(func, *args):
         return func(*args)
 

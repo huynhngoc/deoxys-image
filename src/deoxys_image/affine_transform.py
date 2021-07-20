@@ -6,7 +6,7 @@ from .utils import get_num_cpus
 if get_num_cpus() > 1:
     import ray
 
-    @ray.remote(num_cpus=get_num_cpus(), num_gpus=0)
+    @ray.remote(num_cpus=get_num_cpus(), num_gpus=0, max_calls=10000000)
     def transform_image(func, *args, **kwargs):
         return func(*args, **kwargs)
 
