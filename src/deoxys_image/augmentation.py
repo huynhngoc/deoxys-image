@@ -42,8 +42,8 @@ class ImageAugmentation():
             probability to apply rotation transformation to an image,
             by default 0.2
         zoom_range : float, list, tuple optional
-            the range of zooming, zooming in when the number is less than 1,
-            and zoom out when the number if larger than 1.
+            the range of zooming, zooming out when the number is less than 1,
+            and zoom in (enlarge) when the number is larger than 1.
             If a `float`, then it is the range between that number and 1,
             by default 1 (no zooming)
         zoom_chance : float, optional
@@ -144,8 +144,10 @@ class ImageAugmentation():
             self.rotation_range, self.zoom_range, \
                 self.shift_range = get_range_affine_transform(
                     rank, rotation_range, zoom_range, shift_range)
-
-            self.rotation_axis = rotation_axis
+            if '__iter__' in dir(rotation_axis):
+                self.rotation_axis = rotation_axis
+            else:
+                self.rotation_axis = [rotation_axis]
             self.rotation_chance = rotation_chance
 
             self.zoom_chance = zoom_chance
@@ -243,10 +245,12 @@ class ImageAugmentation():
                     vmin = transformed_images[i].min(axis=reduced_ax)
                     vmax = transformed_images[i].max(axis=reduced_ax)
 
+                    rotation_axis = np.random.choice(self.rotation_axis)
+
                     transformed_images[i] = apply_affine_transform(
                         transformed_images[i],
                         mode=self.fill_mode, cval=self.cval,
-                        theta=theta, rotation_axis=self.rotation_axis,
+                        theta=theta, rotation_axis=rotation_axis,
                         zoom_factor=zoom_factor,
                         shift=shift).clip(vmin, vmax)
 
@@ -254,7 +258,7 @@ class ImageAugmentation():
                         transformed_targets[i] = apply_affine_transform(
                             transformed_targets[i],
                             mode=self.fill_mode, cval=self.cval,
-                            theta=theta, rotation_axis=self.rotation_axis,
+                            theta=theta, rotation_axis=rotation_axis,
                             zoom_factor=zoom_factor,
                             shift=shift)
                         # round the target label back to integer
