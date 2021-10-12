@@ -7,8 +7,8 @@ deoxys-image
         :target: https://deoxys-image.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://travis-ci.com/huynhngoc/deoxys-image.svg
-   :target: https://travis-ci.com/huynhngoc/deoxys-image
+.. image:: https://app.travis-ci.com/huynhngoc/deoxys-image.svg?branch=master
+   :target: https://app.travis-ci.com/huynhngoc/deoxys-image
 
 .. image:: https://coveralls.io/repos/github/huynhngoc/deoxys-image/badge.svg
    :target: https://coveralls.io/github/huynhngoc/deoxys-image
